@@ -1,8 +1,6 @@
 const jwt  = require("jsonwebtoken");
 const {v4 : uuidv4} = require("uuid");
 const crypto = require("crypto");
-const VerificationEmailToken = require("../models/EmailVerificationToken");
-const RefreshToken = require("../models/RefreshToken");
 
 const generateAccessToken = (userId,userRoles, expirationDuration)=>{
     const payload = {userId,userRoles};
@@ -11,14 +9,13 @@ const generateAccessToken = (userId,userRoles, expirationDuration)=>{
     });
     return token;
 }
-const generateRefreshToken = async (userId,expirationDuration)=>{
-
+const generateRefreshToken = async (userId,expirationDuration, RefreshTokenModel)=>{
     const jti = uuidv4();
     const payload = {userId,jti};
     const token = jwt.sign(payload,process.env.REFRESH_SECRET_KEY, {
         expiresIn : expirationDuration
     });
-    const refreshToken = new RefreshToken({
+    const refreshToken = new RefreshTokenModel({
         jti: jti,
         token: token,
         user_id:userId ,
@@ -28,13 +25,13 @@ const generateRefreshToken = async (userId,expirationDuration)=>{
     return {token,jti};
 }
 
-const generateVerificationToken = async (userId ,expirationDuration, maxRetries = 5)=>{
+const generateVerificationToken = async (userId ,expirationDuration,VerificationEmailTokenModel ,maxRetries = 5)=>{
     let retries = 0; 
 
     while (retries < maxRetries){
         try{
             const token =   crypto.randomBytes(20).toString("hex");
-            await VerificationEmailToken.create({
+            await VerificationEmailTokenModel.create({
                 user_id : userId,
                 token : token,
                 expiresAt : new Date(Date.now() + expirationDuration)

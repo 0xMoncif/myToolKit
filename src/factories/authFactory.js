@@ -4,14 +4,13 @@ const mongoose = require("mongoose");
 const validateBody = require("../utils/requestValidator");
 const {sendEmailVerification} = require("../services/emailServices");
 const { generateVerificationToken ,generateAccessToken , generateRefreshToken} = require("../utils/tokenGenerators");
-const VerificationEmailToken = require("../models/EmailVerificationToken");
-const RefreshToken = require("../models/RefreshToken");
 
 const createAuthController = (options) => {
   const {
     // Core requirment
     UserModel,
     RefreshTokenModel,
+    VerificationEmailTokenModel,
     // fields config
     registerFields = ["email", "password", "username"],
     loginFields = ["email", "password"],
@@ -85,7 +84,7 @@ const createAuthController = (options) => {
         // generating the verification mail
         if (requireEmailVerification) {
           //verification token
-          const token = await generateVerificationToken(user._id,emailTokenExpiration);
+          const token = await generateVerificationToken(user._id,emailTokenExpiration,VerificationEmailTokenModel);
           await sendEmailVerification(user, token, {expiryTime : "5 min"});
         }
         return res.status(201).json({
@@ -183,7 +182,7 @@ const createAuthController = (options) => {
         }
 
         const accessToken = generateAccessToken(user._id, user.roles,accessTokenExpiration);
-        const refreshToken = await generateRefreshToken(user._id,refreshTokenExpiration);
+        const refreshToken = await generateRefreshToken(user._id,refreshTokenExpiration,RefreshTokenModel);
         
         req.loginSecurity.resetAttempts();
         res.status(200).json({accessToken : accessToken , refreshToken : refreshToken.token});
@@ -201,7 +200,7 @@ const createAuthController = (options) => {
 
       try{
         const decoded = jwt.verify(refreshToken , process.env.REFRESH_SECRET_KEY);
-        await RefreshToken.findOneAndDelete({jti : decoded.jti});
+        await RefreshTokenModel.findOneAndDelete({jti : decoded.jti});
         res.status(200).json({message : messages.userLoggedOut})
       }catch(error){
         res.status(401).json({ message: messages.invalidVerificationToken});
