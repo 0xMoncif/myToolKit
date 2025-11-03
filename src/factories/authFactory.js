@@ -107,9 +107,9 @@ const createAuthController = (options) => {
           username : username,
           email : email
         }
-        await VerificationEmailToken.findOneAndDelete({user_id : new mongoose.Types.ObjectId(userId)});
+        await VerificationEmailTokenModel.findOneAndDelete({user_id : new mongoose.Types.ObjectId(userId)});
 
-        const token = await generateVerificationToken(userId ,emailTokenExpiration) ;
+        const token = await generateVerificationToken(userId ,emailTokenExpiration,VerificationEmailTokenModel) ;
         await sendEmailVerification(user , token, {expiryTime :"5 min"});
         return res.status(200).json({message : messages.verificationEmailSent});
       }catch(error){
