@@ -8,7 +8,7 @@ function createCRUDController (Model,options ={}){
    }= options
 
    return{
-        // CREATE 
+        // CREATE kekw
         create : async (req,res)=>{
             try{
                 const newUser = new Model(req.body);
