@@ -31,7 +31,8 @@ const createPasswordController = (options) => {
         if (!user) return res.status(200).json({ message: messages.emailSent });
         const token = await generateVerificationToken(
           user._id,
-          tokenExpiration
+          tokenExpiration,
+          VerificationEmailTokenModel
         );
 
         if (!token)

@@ -2,7 +2,7 @@ const sendMail = require("../utils/mailSender");
 
 const emailTemplates = {
   verification: (user, token, data) => ({
-  subject: data.subject || "Verify Your Email Address",
+    subject: data.subject || "Verify Your Email Address",
     html: `
             <h1>Email Verification</h1>
             <p>Hello ${user.username},</p>
@@ -15,7 +15,7 @@ const emailTemplates = {
     text: `Hello ${user.username}, Please verify your email by visiting: ${process.env.BASE_URL}/verify-email?token=${token}`,
   }),
   passwordReset: (user, token, data) => ({
-    subject: data.subject||"Reset Your Password",
+    subject: data.subject || "Reset Your Password",
     html: `
         <h1>Password Reset</h1>
         <p>Hello ${user.username},</p>
@@ -34,8 +34,8 @@ const sendEmailVerification = async (user,token,data)=>{
 }
 
 
-const sendPasswordReset = async (user,token)=>{
-    const emailConfig = emailTemplates.passwordReset(user,token);
+const sendPasswordReset = async (user,token,data)=>{
+    const emailConfig = emailTemplates.passwordReset(user,token,data);
     await sendMail(user.email,emailConfig);
 }
 module.exports = {sendEmailVerification, sendPasswordReset};
