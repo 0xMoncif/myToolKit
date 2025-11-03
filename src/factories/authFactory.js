@@ -128,7 +128,7 @@ const createAuthController = (options) => {
         });
       }
       try {
-        const verificationToken = await VerificationEmailToken.findOne({
+        const verificationToken = await VerificationEmailTokenModel.findOne({
           token: token,
           expiresAt: { $gt: new Date() },
         });
@@ -143,7 +143,7 @@ const createAuthController = (options) => {
           isVerified : true
         });
 
-        await VerificationEmailToken.findOneAndDelete({ token: token });
+        await VerificationEmailTokenModel.findOneAndDelete({ token: token });
         const accessToken = generateAccessToken(user.user_id ,user.roles,accessTokenExpiration);
         res.status(200).json({message : messages.verificationSuccessful, sucess : true,accessToken :accessToken});
       } catch (error) {
