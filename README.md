@@ -1,2 +1,2 @@
 # myToolKit
-this tool kit is designed to make project building faster and easier for devs 
+a small package that will help me build stuff faster (still dudu water but improving)
