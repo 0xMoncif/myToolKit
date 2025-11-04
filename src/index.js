@@ -5,8 +5,8 @@ const myToolKit = {
     createAuthController : factory.createAuthController,
     createCRUDController : factory.createCRUDController,
     createPasswordController : factory.createPasswordController,
-    errorLogger,
-    errorResponse
+    errorLogger : middleware.errorLogger,
+    errorResponse : middleware.errorResponse
 }
 
 module.exports = myToolKit ;

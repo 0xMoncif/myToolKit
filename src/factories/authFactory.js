@@ -51,14 +51,17 @@ const createAuthController = (options) => {
   } = options;
 
   return {
-    register: async (req, res) => {
+    register: async (req, res,next) => {
       try {
         // validating the correct fields sent
         const validation = validateBody(req.body, registerFields);
         if (!validation.valid) {
-          return res.status(400).json({
-            message: `Missing required fields ${validation.missing.join(", ")}`,
-          });
+          const error = {
+            message : "Missing required fields",
+            code : "MISSING_FIELDS",
+            status : 400
+          }
+          throw error
         }
         // extracting the fields from the body
         const userData = {};
@@ -93,10 +96,7 @@ const createAuthController = (options) => {
             : messages.registrationSuccess,
         });
       } catch (error) {
-        return res.status(500).json({
-          error: messages.registrationFailed,
-          details: error.message,
-        });
+        next(error)
       }
     },
     reSendVerificationEmail: async (req, res) => {
