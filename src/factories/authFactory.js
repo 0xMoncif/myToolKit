@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const validateBody = require("../utils/requestValidator");
 const {sendEmailVerification} = require("../services/emailServices");
 const { generateVerificationToken ,generateAccessToken , generateRefreshToken} = require("../utils/tokenGenerators");
+const ValidationError = require("../errors/ValidationError");
 
 const createAuthController = (options) => {
   const {
@@ -56,11 +57,7 @@ const createAuthController = (options) => {
         // validating the correct fields sent
         const validation = validateBody(req.body, registerFields);
         if (!validation.valid) {
-          const error = {
-            message : "Missing required fields",
-            code : "MISSING_FIELDS",
-            status : 400
-          }
+          const error = new ValidationError("missing or invalid required fields",validation.missing)
           throw error
         }
         // extracting the fields from the body
