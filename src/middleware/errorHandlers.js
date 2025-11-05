@@ -10,7 +10,7 @@ const errorResponse = (err,req,res,next)=>{
         message : err.message,
         code : err.code || "INTERNAL_ERROR",
         details : err.details,
-        timeStamps : new Date().toString()
+        timeStamps : new Date().toString(),
     })
 }
 

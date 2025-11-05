@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const validateBody = require("../utils/requestValidator");
 const {sendEmailVerification} = require("../services/emailServices");
 const { generateVerificationToken ,generateAccessToken , generateRefreshToken} = require("../utils/tokenGenerators");
-const ValidationError = require("../errors/ValidationError");
+const {ValidationError,ConflictError} = require("../errors/index");
 
 const createAuthController = (options) => {
   const {
@@ -61,7 +61,7 @@ const createAuthController = (options) => {
           throw error
         }
         // extracting the fields from the body
-        const userData = {};
+        const userData = {}; 
         registerFields.forEach((field) => {
           userData[field] = req.body[field];
         });
@@ -70,7 +70,8 @@ const createAuthController = (options) => {
 
         const existingUser = await UserModel.findOne({ email: userData.email });
         if (existingUser) {
-          return res.status(400).json({ error: messages.userExists });
+          const error = new ConflictError("User already exists", "User")
+          throw error
         }
 
         // hashing the password and setting isVerified flag
