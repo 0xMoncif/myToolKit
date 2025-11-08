@@ -1,8 +1,6 @@
-const {errorLogger ,errorResponse}= require("./errorHandlers")
 
 const middleware = {
-    errorLogger,
-    errorResponse
+    
 }
 
 

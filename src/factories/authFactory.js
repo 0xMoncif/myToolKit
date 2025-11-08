@@ -49,7 +49,12 @@ const createAuthController = (options) => {
     html = "",
     attachments = [],
     service = "gmail",
+
+    // logger 
+    Logger,
   } = options;
+  // worst naming i have ever came up with 
+  const logger = Logger || console; 
 
   return {
     register: async (req, res,next) => {
@@ -70,6 +75,13 @@ const createAuthController = (options) => {
 
         const existingUser = await UserModel.findOne({ email: userData.email });
         if (existingUser) {
+          logger.warn("Duplicate email registration attempt",{
+            email :existingUser.email,
+            ip : req.ip,
+            userAgent : req.get('User-Agent'),
+            existingUserId : existingUser._id 
+          })
+
           const error = new ConflictError("User already exists", "User")
           throw error
         }
@@ -81,7 +93,7 @@ const createAuthController = (options) => {
         userData.isVerified = !requireEmailVerification;
 
         const user = await UserModel.create(userData);
-
+        
         // generating the verification mail
         if (requireEmailVerification) {
           //verification token
