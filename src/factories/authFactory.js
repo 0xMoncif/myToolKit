@@ -93,13 +93,16 @@ const createAuthController = (options) => {
         userData.isVerified = !requireEmailVerification;
 
         const user = await UserModel.create(userData);
-        
+
         // generating the verification mail
         if (requireEmailVerification) {
           //verification token
           const token = await generateVerificationToken(user._id,emailTokenExpiration,VerificationEmailTokenModel);
           await sendEmailVerification(user, token, {expiryTime : "5 min"});
         }
+        logger.info("User registered succesfully",{
+          email : user.email
+        })
         return res.status(201).json({
           message: requireEmailVerification
             ? messages.verificationEmailSent
